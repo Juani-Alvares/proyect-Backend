@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "title": "Zapatillas Nike",
+    "description": "Zapatillas deportivas",
+    "code": "NK123",
+    "price": 50000,
+    "status": true,
+    "stock": 10,
+    "category": "calzado",
+    "thumbnails": [
+      "img/nike1.jpg",
+      "img/nike2.jpg"
+    ]
+  }
+
+]
