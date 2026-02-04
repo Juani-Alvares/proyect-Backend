@@ -12,6 +12,16 @@
       "img/nike1.jpg",
       "img/nike2.jpg"
     ]
+  },
+  {
+    "id": 2,
+    "title": "Remera Nike",
+    "description": "Producto en tiempo real",
+    "code": "RT1770217521171",
+    "price": 28000,
+    "status": true,
+    "stock": 10,
+    "category": "realtime",
+    "thumbnails": []
   }
-
 ]
