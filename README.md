@@ -1,4 +1,4 @@
-# Backend I - Entrega 1
+# Backend I - Entrega 2
 
 Creador: Juan Ignacio Alvares
 
