@@ -2,6 +2,7 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import handlebars from "express-handlebars";
+import mongoose from "mongoose";
 
 import productsRouter from "./routes/products.router.js";
 import cartsRouter from "./routes/carts.router.js";
@@ -58,3 +59,7 @@ io.on("connection", async (socket) => {
 httpServer.listen(PORT, () => {
   console.log(`Servidor escuchando en puerto ${PORT}`);
 });
+
+mongoose.connect("mongodb://127.0.0.1:27017/backend")
+  .then(() => console.log("MongoDB conectado"))
+  .catch((err) => console.error("Error Mongo:", err));

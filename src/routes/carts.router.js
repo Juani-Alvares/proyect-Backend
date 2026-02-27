@@ -1,27 +1,33 @@
-import { Router } from "express";
-import CartManager from "../managers/CartManager.js";
+router.post("/:cid/products/:pid", async (req, res) => {
+  try {
+    const { cid, pid } = req.params;
 
-const router = Router();
-const cartManager = new CartManager();
+    const cart = await Cart.findById(cid);
+    if (!cart) {
+      return res.status(404).json({ error: "Carrito no encontrado" });
+    }
 
-router.post("/", async (req, res) => {
-  const newCart = await cartManager.createCart();
-  res.status(201).json(newCart);
+    const product = await Product.findById(pid);
+    if (!product) {
+      return res.status(404).json({ error: "Producto no encontrado" });
+    }
+
+    const productIndex = cart.products.findIndex(
+      (p) => p.product.toString() === pid
+    );
+
+    if (productIndex !== -1) {
+      cart.products[productIndex].quantity += 1;
+    } else {
+      cart.products.push({ product: pid, quantity: 1 });
+    }
+
+    await cart.save();
+
+   
+    res.redirect(`/carts/${cid}`);
+
+  } catch (error) {
+    res.status(500).json({ error: "Error al agregar producto" });
+  }
 });
-
-router.get("/:cid", async (req, res) => {
-  const cart = await cartManager.getCartById(Number(req.params.cid));
-  if (!cart) return res.status(404).json({ error: "Carrito no encontrado" });
-  res.json(cart);
-});
-
-router.post("/:cid/product/:pid", async (req, res) => {
-  const cart = await cartManager.addProductToCart(
-    Number(req.params.cid),
-    Number(req.params.pid)
-  );
-  if (!cart) return res.status(404).json({ error: "Carrito no encontrado" });
-  res.json(cart);
-});
-
-export default router;
