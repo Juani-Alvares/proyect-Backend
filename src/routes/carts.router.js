@@ -1,33 +1,47 @@
-router.post("/:cid/products/:pid", async (req, res) => {
-  try {
-    const { cid, pid } = req.params;
+import { Router } from 'express';
+import CartDao from '../dao/cart.dao.js';
 
-    const cart = await Cart.findById(cid);
-    if (!cart) {
-      return res.status(404).json({ error: "Carrito no encontrado" });
+const router = Router();
+const cartService = new CartDao();
+
+router.post('/', async (req, res) => {
+    try {
+        const result = await cartService.create();
+        res.status(201).send({ status: "success", payload: result });
+    } catch (error) {
+        res.status(500).send({ status: "error", message: error.message });
     }
-
-    const product = await Product.findById(pid);
-    if (!product) {
-      return res.status(404).json({ error: "Producto no encontrado" });
-    }
-
-    const productIndex = cart.products.findIndex(
-      (p) => p.product.toString() === pid
-    );
-
-    if (productIndex !== -1) {
-      cart.products[productIndex].quantity += 1;
-    } else {
-      cart.products.push({ product: pid, quantity: 1 });
-    }
-
-    await cart.save();
-
-   
-    res.redirect(`/carts/${cid}`);
-
-  } catch (error) {
-    res.status(500).json({ error: "Error al agregar producto" });
-  }
 });
+
+router.get('/:cid', async (req, res) => {
+    try {
+        const cart = await cartService.getById(req.params.cid);
+        if (!cart) return res.status(404).send({ status: "error", message: "Cart not found" });
+        res.send({ status: "success", payload: cart });
+    } catch (error) {
+        res.status(500).send({ status: "error", message: error.message });
+    }
+});
+
+router.delete('/:cid/products/:pid', async (req, res) => {
+    try {
+        const { cid, pid } = req.params;
+        const cart = await cartService.getById(cid);
+        cart.products = cart.products.filter(p => p.product._id.toString() !== pid);
+        await cartService.update(cid, cart);
+        res.send({ status: "success", message: "Product deleted" });
+    } catch (error) {
+        res.status(500).send({ status: "error", message: error.message });
+    }
+});
+
+router.put('/:cid', async (req, res) => {
+    try {
+        const result = await cartService.update(req.params.cid, { products: req.body.products });
+        res.send({ status: "success", payload: result });
+    } catch (error) {
+        res.status(500).send({ status: "error", message: error.message });
+    }
+});
+
+export default router;

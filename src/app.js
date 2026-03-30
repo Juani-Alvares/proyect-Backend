@@ -1,65 +1,27 @@
-import express from "express";
-import { createServer } from "http";
-import { Server } from "socket.io";
-import handlebars from "express-handlebars";
-import mongoose from "mongoose";
+import express from 'express';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import productsRouter from './routes/products.router.js';
+import cartsRouter from './routes/carts.router.js';
 
-import productsRouter from "./routes/products.router.js";
-import cartsRouter from "./routes/carts.router.js";
-import viewsRouter from "./routes/views.router.js";
-import ProductManager from "./managers/ProductManager.js";
+dotenv.config();
 
 const app = express();
-const PORT = 8080;
-
-
-const httpServer = createServer(app);
-
-const io = new Server(httpServer);
-
-app.set("io", io);
-
-app.engine("handlebars", handlebars.engine());
-app.set("views", "./src/views");
-app.set("view engine", "handlebars");
+const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("./src/public"));
 
-app.use("/api/products", productsRouter);
-app.use("/api/carts", cartsRouter);
-app.use("/", viewsRouter);
+mongoose.connect(process.env.MONGO_URL)
+    .then(() => console.log("DB conectada"))
+    .catch(err => console.log("Error DB:", err));
 
-const productManager = new ProductManager();
+app.use('/api/products', productsRouter);
+app.use('/api/carts', cartsRouter);
 
-io.on("connection", async (socket) => {
-  console.log("🟢 Cliente conectado");
-
-  const products = await productManager.getProducts();
-  socket.emit("updateProducts", products);
-
-  socket.on("addProduct", async (product) => {
-    await productManager.addProduct(product);
-    const updatedProducts = await productManager.getProducts();
-    io.emit("updateProducts", updatedProducts);
-  });
-
-  socket.on("deleteProduct", async (id) => {
-    await productManager.deleteProduct(Number(id));
-    const updatedProducts = await productManager.getProducts();
-    io.emit("updateProducts", updatedProducts);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("🔴 Cliente desconectado");
-  });
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send({ status: "error", message: "Error interno del servidor" });
 });
 
-httpServer.listen(PORT, () => {
-  console.log(`Servidor escuchando en puerto ${PORT}`);
-});
-
-mongoose.connect("mongodb://127.0.0.1:27017/backend")
-  .then(() => console.log("MongoDB conectado"))
-  .catch((err) => console.error("Error Mongo:", err));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
