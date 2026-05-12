@@ -1,0 +1,11 @@
+no entiendo estas dos partes;
+
+Después de middlewares:
+
+initializePassport();
+app.use(passport.initialize());
+
+y tambien esta parte; 
+🧪 5. PROBAR OTRA VEZ LOGIN
+
+👉 mismo request en Postman

@@ -1,4 +1,12 @@
 import mongoose from "mongoose";
+
+const schema = new mongoose.Schema({
+    name: String,
+    price: Number
+})
+
+export default mongoose.model("Product", schema);
+
 import mongoosePaginate from "mongoose-paginate-v2";
 
 const productSchema = new mongoose.Schema({
