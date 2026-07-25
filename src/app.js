@@ -1,3 +1,4 @@
+import adoptionRouter from "./routes/adoption.router.js";
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -49,6 +50,7 @@ app.use('/api/v1/products', productsRouter);
 app.use('/api/v1/carts', cartsRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/session', sessionRouter);
+app.use('/api/v1/adoptions', adoptionRouter);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
@@ -66,6 +68,4 @@ app.use((req, res) => {
     });
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+export default app;

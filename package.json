@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node src/app.js"
-  },
+  "start": "node src/server.js",
+  "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --runInBand",
+  "test:watch": "jest --watchAll"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -27,5 +29,10 @@
     "socket.io": "^4.8.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "jest": "^30.4.2",
+    "mongodb-memory-server": "^11.2.0",
+    "supertest": "^7.2.2"
   }
 }
